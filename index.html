@@ -130,7 +130,7 @@
                     var cell_3 = row.insertCell(2);
                     var myButton = document.createElement("button");
                     var Text = document.createTextNode("Löschen");
-                    myButton.id = names[i]
+                    myButton.id = names[i];
                     myButton.appendChild(Text);
                     myButton.setAttribute('onclick', 'deleteRow(this)');
                     cell_3.appendChild(myButton);
@@ -139,11 +139,6 @@
 
             }
 
-            /*
-             * Gibt die Anzahl der Zeilen des Table Elements wieder
-             * @param {type} table_id
-             * @returns {Number.numRows|numRows.numRows.numRows}
-             */
             function numRows(table_id) {
                 var rows = document.getElementById(table_id).getElementsByTagName('tr');
                 var numRows = 0;
@@ -155,23 +150,28 @@
                 return numRows;
             }
 
-            /*
-             * Geht so lange die Tabelle durch, bis kein Element mehr in der Tabelle steht außer den Kopf (Ersten zwei Zeilen)
-             * @param {type} table_id
-             * @returns {undefined}
-             */
+
             function deleteTable(table_id) {
                 var lastRow = numRows(table_id) - 1;
                 console.log(lastRow);
                 var i = 2;
                 while (i <= lastRow) {
                     document.getElementById(table_id).deleteRow(i);
-                    i + 2;
+                    i+2;
                 }
                 //console.log(lastRow);
                 //console.log(i);
 
             }
+            
+            function getButton() {
+                console.log("Test e");
+                var e = window.event,
+                        btn = e.target || e.srcElement;
+                console.log("Test e");
+                return (btn.id);
+            }
+
 
             /*
              * Helper Funtkion um die ParentNodes bis zum Element hochzugehen
@@ -194,6 +194,38 @@
             }
 
             /*
+             * Funktion zum löschen der ausgewählten Zeile
+             * @param {type} el
+             * @returns {undefined}
+             */
+            function deleteRow(el) {
+                var username = el.id;
+                console.log(el.id);
+                var flag = 1 ;
+                console.log(el.getAttribute('id'));
+                console.log(username);
+                var URL = "http://localhost/AVS/deleteData.php";
+                var ajaxCom = new Ajax(URL, receive);
+
+                // expected components (checked in receive())
+                receivedObj = {"username": 0, "flag" : 0};
+                ajaxCom.send({
+                    "username": username,
+                    "flag": flag
+                });
+
+                ajaxCom.disconnect();
+                var row = upTo(el, 'tr')
+
+                if (row)
+                    row.parentNode.removeChild(row);
+            }
+
+
+
+
+
+            /*
              * Löscht die Textdateien der registrierten Nutzer.
              * Wird im Feld User ein Name angegeben, wird nur der angegebene User gelsöcht.
              * Wird das Feld User freigelassen, werden alle Nutzer gelöscht.
@@ -202,13 +234,15 @@
                 var username = document.getElementById("username").value;
                 var password = document.getElementById("password").value;
                 var URL = "http://localhost/AVS/deleteData.php";
+                var flag = 0;
                 var ajaxCom = new Ajax(URL, receive);
 
                 // expected components (checked in receive())
-                receivedObj = {"username": 0, "password": 0};
+                receivedObj = {"username": 0, "password": 0, "flag": 0};
                 ajaxCom.send({
                     "username": username,
-                    "password": password
+                    "password": password,
+                    "flag": flag
                 });
 
                 ajaxCom.disconnect();
